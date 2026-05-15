@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "editorconfig.editorconfig",
+    "christian-kohler.npm-intellisense",
+    "mikestead.dotenv",
+    "yoavbls.pretty-ts-errors"
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "name": "securevault",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SecureVault — backend learning project (Node.js + Express + TypeORM)",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=20.18.0 <21",
+    "npm": ">=10"
+  },
+  "volta": {
+    "node": "20.19.6",
+    "npm": "10.8.2"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "rimraf dist && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "start": "node dist/index.js",
+    "clean": "rimraf dist coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "format": "prettier --write --no-error-on-unmatched-pattern \"src/**/*.{ts,json,md}\" \"tests/**/*.{ts,json}\" \"scripts/**/*.{js,mjs}\"",
+    "format:check": "prettier --check --no-error-on-unmatched-pattern \"src/**/*.{ts,json,md}\" \"scripts/**/*.{js,mjs}\"",
+    "test": "cross-env NODE_ENV=test jest --passWithNoTests",
+    "test:watch": "cross-env NODE_ENV=test jest --watch",
+    "test:cov": "cross-env NODE_ENV=test jest --coverage",
+    "env:init": "node scripts/init-env.mjs",
+    "docker:setup": "node scripts/docker-setup.mjs",
+    "docker:start": "docker compose up -d postgres redis",
+    "docker:stop": "docker compose down",
+    "docker:reset": "docker compose down -v && docker compose up -d postgres redis",
+    "docker:reinstall": "docker compose down && docker compose pull && docker compose up -d postgres redis",
+    "docker:logs": "docker compose logs -f postgres redis",
+    "docker:tools": "docker compose --profile tools up -d",
+    "db:start": "node scripts/docker-service.mjs postgres start",
+    "db:stop": "node scripts/docker-service.mjs postgres stop",
+    "db:reset": "node scripts/docker-service.mjs postgres reset",
+    "db:reinstall": "node scripts/docker-service.mjs postgres reinstall",
+    "redis:start": "node scripts/docker-service.mjs redis start",
+    "redis:stop": "node scripts/docker-service.mjs redis stop",
+    "redis:reset": "node scripts/docker-service.mjs redis reset",
+    "redis:reinstall": "node scripts/docker-service.mjs redis reinstall",
+    "prepare": "husky || true",
+    "migration:generate": "typeorm-ts-node-commonjs migration:generate -d src/db/data-source.ts",
+    "migration:run": "typeorm-ts-node-commonjs migration:run -d src/db/data-source.ts",
+    "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/db/data-source.ts",
+    "cli": "tsx src/cli/index.ts"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
+    "bullmq": "^5.21.2",
+    "commander": "^12.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-rate-limit": "^7.4.1",
+    "helmet": "^8.0.0",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.0",
+    "pino": "^9.5.0",
+    "pino-http": "^10.3.0",
+    "pino-pretty": "^11.3.0",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.20",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.12.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.13",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.7.5",
+    "@types/supertest": "^6.0.2",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.12.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.11.0",
+    "husky": "^9.1.6",
+    "jest": "^29.7.0",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "rimraf": "^6.0.1",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
+    "tsc-alias": "^1.8.10",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.8.1"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/tests"
+    ],
+    "testMatch": [
+      "**/*.test.ts",
+      "**/*.spec.ts"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}
