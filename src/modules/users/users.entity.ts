@@ -4,7 +4,6 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  Index,
 } from 'typeorm';
 
 @Entity('users')
@@ -12,17 +11,18 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Index()
   @Column({
+    type: 'varchar',
     unique: true,
     length: 255,
   })
   email!: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   passwordHash!: string;
 
   @Column({
+    type: 'varchar',
     default: 'ACTIVE',
     length: 20,
   })

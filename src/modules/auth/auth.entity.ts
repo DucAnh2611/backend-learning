@@ -16,11 +16,14 @@ export class RefreshSession {
   id!: string;
 
   @Index()
-  @Column()
+  @Column({
+    type: 'varchar',
+  })
   tokenHash!: string;
 
-  @Index()
-  @Column('uuid')
+  @Column({
+    type: 'varchar',
+  })
   userId!: string;
 
   @ManyToOne(() => User, {
