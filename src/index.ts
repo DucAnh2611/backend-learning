@@ -1,8 +1,18 @@
 import type { Server } from 'node:http';
 import { createApp } from '@/app';
 import { env } from '@/config';
+import { AppDataSource } from '@/db/data-source';
+import { seedPermissions } from '@/db/seed-permissions';
 
 const bootstrap = async (): Promise<Server> => {
+  const dataSource = await AppDataSource.initialize();
+
+  await seedPermissions();
+
+  if (!dataSource.isInitialized) {
+    throw new Error('DB init failed');
+  }
+
   const app = createApp();
 
   const server = app.listen(env.PORT, () => {

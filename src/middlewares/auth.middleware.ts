@@ -18,7 +18,11 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     throw new AppError('Unauthorized', 401);
   }
 
-  const token = authHeader.replace('Bearer ', '');
+  const [scheme, token] = authHeader.split(' ');
+
+  if (scheme !== 'Bearer' || !token) {
+    throw new AppError('Unauthorized', 401);
+  }
 
   const payload = verifyAccessToken(token);
 
