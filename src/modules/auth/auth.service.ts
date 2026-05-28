@@ -16,6 +16,7 @@ import { hashToken } from '@/common/utils/crypto.util';
 
 import { User } from '@/modules/users';
 import { RefreshSession } from './auth.entity';
+import { UserStatus } from '@/modules/users';
 
 import type { RegisterDto, LoginDto } from './auth.dto';
 
@@ -64,7 +65,7 @@ async function register(dto: RegisterDto) {
   const user = userRepo().create({
     email: dto.email,
     passwordHash,
-    status: 'ACTIVE',
+    status: UserStatus.ACTIVE,
   });
 
   await userRepo().save(user);
@@ -95,6 +96,10 @@ async function login(dto: LoginDto) {
 
   if (!user) {
     throw new AppError('Invalid credentials', 401);
+  }
+
+  if (user.status === UserStatus.BLOCKED) {
+    throw new AppError('Account blocked', 403);
   }
 
   const matched = await compareHash(dto.password, user.passwordHash);
