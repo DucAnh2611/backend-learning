@@ -8,7 +8,7 @@ import { Role, RolePermission, AppMember } from '@/modules/rbac';
 
 import { DEFAULT_ROLE_PERMISSIONS } from '@/modules/rbac/permissions.constants';
 
-import type { CreateAppDto } from './apps.dto';
+import type { CreateAppDto, UpdateAppDto } from './apps.dto';
 
 const appRepo = () => AppDataSource.getRepository(App);
 
@@ -78,12 +78,13 @@ async function getApps(userId: string) {
     .getMany();
 }
 
-async function getApp(id: string) {
-  const app = await appRepo().findOne({
-    where: {
-      id,
-    },
-  });
+async function getAppForUser(userId: string, id: string) {
+  const app = await appRepo()
+    .createQueryBuilder('app')
+    .innerJoin(AppMember, 'member', 'member.appId = app.id')
+    .where('app.id = :id', { id })
+    .andWhere('member.userId = :userId', { userId })
+    .getOne();
 
   if (!app) {
     throw new AppError('App not found', 404);
@@ -92,8 +93,36 @@ async function getApp(id: string) {
   return app;
 }
 
+async function assertOwner(app: App, userId: string) {
+  if (app.ownerId !== userId) {
+    throw new AppError('Forbidden', 403);
+  }
+}
+
+async function updateApp(userId: string, id: string, dto: UpdateAppDto) {
+  const app = await getAppForUser(userId, id);
+
+  await assertOwner(app, userId);
+
+  if (dto.name !== undefined) {
+    app.name = dto.name;
+  }
+
+  return appRepo().save(app);
+}
+
+async function deleteApp(userId: string, id: string) {
+  const app = await getAppForUser(userId, id);
+
+  await assertOwner(app, userId);
+
+  await appRepo().delete({ id });
+}
+
 export const appsService = {
   createApp,
   getApps,
-  getApp,
+  getAppForUser,
+  updateApp,
+  deleteApp,
 };

@@ -10,6 +10,8 @@ import {
 
 import { User } from '@/modules/users';
 import { Role, AppMember } from '@/modules/rbac';
+import { ApiKey } from '@/modules/apikeys';
+import { ConfigEntry } from '@/modules/configs';
 
 @Entity('apps')
 export class App {
@@ -40,6 +42,12 @@ export class App {
 
   @OneToMany(() => AppMember, (member) => member.app)
   members!: AppMember[];
+
+  @OneToMany(() => ApiKey, (apiKey) => apiKey.app)
+  apiKeys!: ApiKey[];
+
+  @OneToMany(() => ConfigEntry, (config) => config.app)
+  configs!: ConfigEntry[];
 
   @CreateDateColumn()
   createdAt!: Date;
